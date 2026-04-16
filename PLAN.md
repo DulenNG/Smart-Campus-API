@@ -2,7 +2,7 @@
 
 **Module:** 5COSC022W — Client-Server Architectures  
 **Due:** 24th April 2026, 13:00  
-**Stack:** Java + JAX-RS (Jersey) + Maven + Grizzly embedded server  
+**Stack:** Java + JAX-RS (Jersey) + Maven + Standalone Tomcat (WAR deployment)  
 **Rules:** No Spring Boot · No databases · In-memory only (HashMap / ArrayList)
 
 ---
@@ -28,13 +28,15 @@
 **Goal:** Get a running Maven project with a working `/api/v1` base URL.
 
 ### Tasks
-- [ ] Bootstrap Maven project with Jersey + Grizzly embedded server
-- [ ] Write `pom.xml` with dependencies:
-  - `jersey-server`
-  - `jersey-media-json-jackson`
-  - `grizzly2-http-server`
+- [ ] Bootstrap Maven project with Jersey + Standalone Tomcat (WAR packaging)
+- [ ] Write `pom.xml` with:
+  - `packaging` set to `war`
+  - `jersey-container-servlet` — Jersey servlet integration
+  - `jersey-media-json-jackson` — JSON support
+  - `jersey-hk2` — Jersey dependency injection
+  - `javax.servlet-api` with `scope: provided` (Tomcat ships it)
 - [ ] Create `SmartCampusApplication.java` extending `javax.ws.rs.core.Application` with `@ApplicationPath("/api/v1")`
-- [ ] Create `Main.java` to boot the Grizzly server at `http://localhost:8080/api/v1`
+- [ ] Create minimal `src/main/webapp/WEB-INF/web.xml` (triggers Servlet 3.0 auto-scan — no `Main.java` needed)
 - [ ] Create POJO models with full getters/setters:
   - `Room.java` — id, name, capacity, sensorIds (List)
   - `Sensor.java` — id, type, status, currentValue, roomId
@@ -45,10 +47,12 @@
   - `HashMap<String, List<SensorReading>> readings`
 - [ ] Create `DiscoveryResource.java` at `@Path("/")`
   - `GET /api/v1` → returns JSON: API version, admin contact, links map
+- [ ] Verify build works: `mvn clean package` → generates `target/*.war`
 
 ### Commit Messages
 ```
-feat: initialize Maven project with Jersey and Grizzly embedded server
+feat: initialize Maven WAR project with Jersey and Tomcat servlet container
+feat: add web.xml and SmartCampusApplication with @ApplicationPath
 feat: add Room, Sensor, SensorReading POJO models
 feat: add DataStore singleton for in-memory storage
 feat: implement GET /api/v1 discovery endpoint
@@ -184,34 +188,53 @@ feat: add ApiLoggingFilter for request and response observability
 
 ---
 
-## ✅ Day 5 — April 21 (Mon): Polish + README + curl Testing + Video
+## ✅ Day 5 — April 21 (Mon): Deploy to Tomcat + Postman Testing + README + Video
 > **All Parts**
 
-**Goal:** Everything works end-to-end, README is complete, video is recorded.
+**Goal:** WAR deployed to Tomcat, everything tested in Postman, README complete, video recorded.
 
-### Tasks
-- [ ] Test ALL endpoints manually with Postman and curl:
-  - [ ] `GET /api/v1` — discovery
-  - [ ] `POST /api/v1/rooms` + `GET /api/v1/rooms`
-  - [ ] `DELETE /api/v1/rooms/{id}` — with sensors (→ 409) and without (→ 204)
-  - [ ] `POST /api/v1/sensors` — valid roomId (→ 201) and invalid roomId (→ 422)
-  - [ ] `GET /api/v1/sensors?type=CO2`
-  - [ ] `POST /api/v1/sensors/{id}/readings` — MAINTENANCE sensor (→ 403) and ACTIVE (→ 201)
-  - [ ] `GET /api/v1/sensors/{id}/readings`
+### Tomcat Deployment Steps
+```
+1. mvn clean package
+   → generates target/Smart-Campus-API.war
+
+2. Copy WAR to:  <TOMCAT_HOME>/webapps/
+
+3. Start Tomcat: <TOMCAT_HOME>/bin/startup.bat
+
+4. Base URL in Postman:
+   http://localhost:8080/Smart-Campus-API/api/v1
+```
+
+### Postman Testing Checklist
+- [ ] `GET  /api/v1` — discovery endpoint
+- [ ] `POST /api/v1/rooms` → `201 Created`
+- [ ] `GET  /api/v1/rooms` → list of rooms
+- [ ] `GET  /api/v1/rooms/{roomId}` → single room
+- [ ] `DELETE /api/v1/rooms/{roomId}` — with sensors (→ 409) and without (→ 204)
+- [ ] `POST /api/v1/sensors` — valid roomId (→ 201) and non-existent roomId (→ 422)
+- [ ] `GET  /api/v1/sensors` → all sensors
+- [ ] `GET  /api/v1/sensors?type=CO2` → filtered list
+- [ ] `GET  /api/v1/sensors/{sensorId}` → single sensor
+- [ ] `POST /api/v1/sensors/{id}/readings` — MAINTENANCE sensor (→ 403) and ACTIVE (→ 201)
+- [ ] `GET  /api/v1/sensors/{id}/readings` → reading history
+- [ ] Trigger a `500` by introducing a quick test to verify GlobalExceptionMapper
+
+### README Tasks
 - [ ] Write complete `README.md` containing:
   - [ ] API overview and resource hierarchy
-  - [ ] Step-by-step build + run instructions
+  - [ ] Step-by-step build + Tomcat deploy instructions
   - [ ] At least **5 curl sample commands** with expected responses
   - [ ] All question answers (Parts 1–5)
 - [ ] Record ≤10 min **Postman video demo**:
   - Camera + microphone must be active
-  - Walk through each endpoint and error scenario
-- [ ] Final review of all commits — ensure messages are clean and descriptive
+  - Walk through each endpoint and all error scenarios
+- [ ] Final review of all commits — ensure messages are clean
 - [ ] Submit GitHub repo link + video on Blackboard
 
 ### Commit Messages
 ```
-docs: write complete README with overview, build instructions and curl examples
+docs: write complete README with Tomcat deploy instructions and curl examples
 docs: add all report question answers to README
 chore: final cleanup and polish
 ```
@@ -220,43 +243,60 @@ chore: final cleanup and polish
 
 ## 🏗️ Project Package Structure
 
+> ⚠️ **No `Main.java`** — Tomcat is the server. The WAR is dropped into Tomcat's `webapps/` folder.
+
 ```
 Smart-Campus-API/
-├── pom.xml
+├── pom.xml                          ← packaging = war
 ├── README.md
 ├── PLAN.md                          ← you are here
 └── src/
     └── main/
-        └── java/
-            └── com/smartcampus/
-                ├── Main.java
-                ├── SmartCampusApplication.java
-                ├── data/
-                │   └── DataStore.java
-                ├── model/
-                │   ├── Room.java
-                │   ├── Sensor.java
-                │   └── SensorReading.java
-                ├── resource/
-                │   ├── DiscoveryResource.java
-                │   ├── RoomResource.java
-                │   ├── SensorResource.java
-                │   └── SensorReadingResource.java
-                ├── exception/
-                │   ├── RoomNotEmptyException.java
-                │   ├── LinkedResourceNotFoundException.java
-                │   ├── SensorUnavailableException.java
-                │   └── ResourceNotFoundException.java
-                ├── mapper/
-                │   ├── RoomNotEmptyExceptionMapper.java
-                │   ├── LinkedResourceNotFoundExceptionMapper.java
-                │   ├── SensorUnavailableExceptionMapper.java
-                │   ├── ResourceNotFoundExceptionMapper.java
-                │   └── GlobalExceptionMapper.java
-                └── filter/
-                    └── ApiLoggingFilter.java
+        ├── java/
+        │   └── com/smartcampus/
+        │       ├── SmartCampusApplication.java   ← @ApplicationPath("/api/v1")
+        │       ├── data/
+        │       │   └── DataStore.java            ← in-memory singleton
+        │       ├── model/
+        │       │   ├── Room.java
+        │       │   ├── Sensor.java
+        │       │   └── SensorReading.java
+        │       ├── resource/
+        │       │   ├── DiscoveryResource.java
+        │       │   ├── RoomResource.java
+        │       │   ├── SensorResource.java
+        │       │   └── SensorReadingResource.java
+        │       ├── exception/
+        │       │   ├── RoomNotEmptyException.java
+        │       │   ├── LinkedResourceNotFoundException.java
+        │       │   ├── SensorUnavailableException.java
+        │       │   └── ResourceNotFoundException.java
+        │       ├── mapper/
+        │       │   ├── RoomNotEmptyExceptionMapper.java
+        │       │   ├── LinkedResourceNotFoundExceptionMapper.java
+        │       │   ├── SensorUnavailableExceptionMapper.java
+        │       │   ├── ResourceNotFoundExceptionMapper.java
+        │       │   └── GlobalExceptionMapper.java
+        │       └── filter/
+        │           └── ApiLoggingFilter.java
+        └── webapp/
+            └── WEB-INF/
+                └── web.xml                       ← minimal, triggers Servlet 3.0 scan
+```
+
+### 🔄 Build & Deploy Flow
+```
+mvn clean package
+     ↓
+target/Smart-Campus-API.war
+     ↓
+Copy to <TOMCAT_HOME>/webapps/
+     ↓
+Start Tomcat → startup.bat
+     ↓
+Postman: http://localhost:8080/Smart-Campus-API/api/v1
 ```
 
 ---
 
-*Last updated: April 16, 2026*
+*Last updated: April 16, 2026 — Updated to use standalone Tomcat WAR deployment*
