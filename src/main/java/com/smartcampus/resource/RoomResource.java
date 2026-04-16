@@ -61,7 +61,7 @@ public class RoomResource {
     public Response getRoom(@PathParam("roomId") String roomId) {
         Room room = dataStore.getRoom(roomId);
         if (room == null) {
-            throw new NotFoundException("Room not found: " + roomId);
+            throw new com.smartcampus.exception.ResourceNotFoundException("Room not found: " + roomId);
         }
         return Response.ok(room).build();
     }
@@ -76,7 +76,7 @@ public class RoomResource {
         Room room = dataStore.getRoom(roomId);
         
         if (room == null) {
-            throw new NotFoundException("Room not found: " + roomId);
+            throw new com.smartcampus.exception.ResourceNotFoundException("Room not found: " + roomId);
         }
 
         // Business Logic Constraint: Room cannot be deleted if it has sensors assigned.

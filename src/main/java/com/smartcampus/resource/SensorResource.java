@@ -91,7 +91,7 @@ public class SensorResource {
     public Response getSensor(@PathParam("sensorId") String sensorId) {
         Sensor sensor = dataStore.getSensor(sensorId);
         if (sensor == null) {
-            throw new NotFoundException("Sensor not found: " + sensorId);
+            throw new com.smartcampus.exception.ResourceNotFoundException("Sensor not found: " + sensorId);
         }
         return Response.ok(sensor).build();
     }
@@ -105,7 +105,7 @@ public class SensorResource {
     public Response deleteSensor(@PathParam("sensorId") String sensorId) {
         Sensor sensor = dataStore.getSensor(sensorId);
         if (sensor == null) {
-            throw new NotFoundException("Sensor not found: " + sensorId);
+            throw new com.smartcampus.exception.ResourceNotFoundException("Sensor not found: " + sensorId);
         }
 
         // Cleanup room reference
@@ -123,8 +123,7 @@ public class SensorResource {
      * (Part 4 requirement - will be implemented on Day 4)
      */
     @Path("{sensorId}/readings")
-    public Object getReadingsResource(@PathParam("sensorId") String sensorId) {
-        // This will return SensorReadingResource once created
-        return null; 
+    public SensorReadingResource getReadingsResource(@PathParam("sensorId") String sensorId) {
+        return new SensorReadingResource(sensorId);
     }
 }
