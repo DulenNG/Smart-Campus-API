@@ -11,7 +11,7 @@
 
 | Day | Date     | Focus                           | Marks Covered  | Status  |
 |-----|----------|---------------------------------|----------------|---------|
-| 1   | Apr 17   | Setup + Discovery Endpoint      | Part 1 (10)    | ⬜ TODO |
+| 1   | Apr 17   | Setup + Discovery Endpoint      | Part 1 (10)    | ✅ COMPLETED |
 | 2   | Apr 18   | Room Management                 | Part 2 (20)    | ⬜ TODO |
 | 3   | Apr 19   | Sensor Management + Filtering   | Part 3 (20)    | ⬜ TODO |
 | 4   | Apr 20   | Sub-Resources + Error Handling  | Part 4+5 (50)  | ⬜ TODO |
