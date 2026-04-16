@@ -12,10 +12,10 @@
 | Day | Date     | Focus                           | Marks Covered  | Status  |
 |-----|----------|---------------------------------|----------------|---------|
 | 1   | Apr 17   | Setup + Discovery Endpoint      | Part 1 (10)    | ✅ COMPLETED |
-| 2   | Apr 18   | Room Management                 | Part 2 (20)    | ⬜ TODO |
-| 3   | Apr 19   | Sensor Management + Filtering   | Part 3 (20)    | ⬜ TODO |
-| 4   | Apr 20   | Sub-Resources + Error Handling  | Part 4+5 (50)  | ⬜ TODO |
-| 5   | Apr 21   | Polish + README + Video Demo    | All parts      | ⬜ TODO |
+| 2   | Apr 18   | Room Management                 | Part 2 (20)    | ✅ COMPLETED |
+| 3   | Apr 19   | Sensor Management + Filtering   | Part 3 (20)    | ✅ COMPLETED |
+| 4   | Apr 20   | Sub-Resources + Error Handling  | Part 4+5 (50)  | ✅ COMPLETED |
+| 5   | Apr 21   | Deploy to Tomcat + Postman + README | All parts      | ✅ COMPLETED |
 
 > **Buffer days:** Apr 22–23 for bug fixes and final polish  
 > **Hard deadline:** Apr 24, 13:00 ✅
