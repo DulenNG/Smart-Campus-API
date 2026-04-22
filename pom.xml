@@ -91,6 +91,8 @@
                 <configuration>
                     <path>/</path>
                     <port>8080</port>
+                    <!-- Fix for Java 9+ / Tomcat 7 compatibility issues -->
+                    <delegate>true</delegate>
                 </configuration>
             </plugin>
         </plugins>

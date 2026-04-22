@@ -12,3 +12,15 @@ target/
 # OS files
 .DS_Store
 Thumbs.db
+
+# NetBeans files
+nbproject/
+nb-configuration.xml
+nbactions.xml
+nb-debug.xml
+
+# VS Code files
+.vscode/
+
+# Logs
+*.log

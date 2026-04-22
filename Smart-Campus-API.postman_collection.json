@@ -1,0 +1,335 @@
+{
+	"info": {
+		"_postman_id": "b3f6e1a4-9b5c-4d5e-8f9a-1c2d3e4f5a6b",
+		"name": "Smart Campus API (Coursework 5COSC022W)",
+		"description": "Postman collection for testing the Smart Campus Sensor & Room Management API. Covers all tasks for Part 1-5 of the coursework.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Part 1: Service Architecture",
+			"item": [
+				{
+					"name": "Discovery Endpoint",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "GET /api/v1 - Returns API metadata and HATEOAS links."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Part 2: Room Management",
+			"item": [
+				{
+					"name": "Create a Room (LIB-301)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"LIB-301\",\n    \"name\": \"Library Quiet Study\",\n    \"capacity\": 50\n}",
+							"options": {
+								"json": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/rooms",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List All Rooms",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/rooms",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Specific Room (LIB-301)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/rooms/LIB-301",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rooms",
+								"LIB-301"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Room (409 Conflict Test)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/rooms/LIB-301",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rooms",
+								"LIB-301"
+							]
+						},
+						"description": "Attempting to delete a room that still has sensors assigned to it. Should return 409 Conflict."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Part 3: Sensor Operations",
+			"item": [
+				{
+					"name": "Register Sensor (TEMP-001)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"TEMP-001\",\n    \"type\": \"Temperature\",\n    \"status\": \"ACTIVE\",\n    \"roomId\": \"LIB-301\"\n}",
+							"options": {
+								"json": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/sensors",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"sensors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Sensor (422 Unprocessable Test)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"FAIL-001\",\n    \"type\": \"CO2\",\n    \"status\": \"ACTIVE\",\n    \"roomId\": \"NON-EXISTENT-ROOM\"\n}",
+							"options": {
+								"json": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/sensors",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"sensors"
+							]
+						},
+						"description": "Attempting to register a sensor to a room that doesn't exist. Should return 422 Unprocessable Entity."
+					},
+					"response": []
+				},
+				{
+					"name": "List Sensors (Filter by Type)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/sensors?type=Temperature",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"sensors"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "Temperature"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Part 4: Sub-Resources (Readings)",
+			"item": [
+				{
+					"name": "Append Reading (Success)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"value\": 22.5\n}",
+							"options": {
+								"json": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/sensors/TEMP-001/readings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"sensors",
+								"TEMP-001",
+								"readings"
+							]
+						},
+						"description": "Adds a reading to TEMP-001 and updates the sensor's current value."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reading History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/sensors/TEMP-001/readings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"sensors",
+								"TEMP-001",
+								"readings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Setup Maintenance Sensor (CO2-999)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"CO2-999\",\n    \"type\": \"CO2\",\n    \"status\": \"MAINTENANCE\",\n    \"roomId\": \"LIB-301\"\n}",
+							"options": {
+								"json": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/sensors",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"sensors"
+							]
+						},
+						"description": "Creates a sensor with status MAINTENANCE so we can test the 403 error."
+					},
+					"response": []
+				},
+				{
+					"name": "Append Reading (403 Forbidden Test)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"value\": 450.0\n}",
+							"options": {
+								"json": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/sensors/CO2-999/readings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"sensors",
+								"CO2-999",
+								"readings"
+							]
+						},
+						"description": "This will now return 403 Forbidden because CO2-999 exists but is in MAINTENANCE status."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080/api/v1",
+			"type": "string"
+		}
+	]
+}
