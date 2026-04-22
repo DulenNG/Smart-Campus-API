@@ -4,9 +4,18 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
          http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
-    <!--
-        Minimal web.xml — required to trigger Servlet 3.0 classpath scanning.
-        Jersey will auto-detect SmartCampusApplication via @ApplicationPath.
-        No servlet mappings needed here.
-    -->
+    <servlet>
+        <servlet-name>com.smartcampus.SmartCampusApplication</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>com.smartcampus.SmartCampusApplication</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>com.smartcampus.SmartCampusApplication</servlet-name>
+        <url-pattern>/api/v1/*</url-pattern>
+    </servlet-mapping>
 </web-app>

@@ -18,10 +18,13 @@ import javax.ws.rs.ApplicationPath;
  * the in-memory maps must live outside the resource classes to persist data
  * between requests. See README for full discussion.
  */
-@ApplicationPath("/api/v1")
+@ApplicationPath("/")
 public class SmartCampusApplication extends ResourceConfig {
 
     public SmartCampusApplication() {
+        // Register Jackson for JSON support
+        register(org.glassfish.jersey.jackson.JacksonFeature.class);
+
         // Scan all classes under com.smartcampus — picks up @Path, @Provider, @PreMatching, etc.
         packages("com.smartcampus");
     }

@@ -20,6 +20,11 @@ public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
 
     @Override
     public Response toResponse(Throwable exception) {
+        // If it's already a JAX-RS error (like 404, 405, etc.), just let it through
+        if (exception instanceof javax.ws.rs.WebApplicationException) {
+            return ((javax.ws.rs.WebApplicationException) exception).getResponse();
+        }
+
         // Log the actual error for the developer
         LOGGER.log(Level.SEVERE, "Unexpected application error", exception);
 
